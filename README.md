@@ -1,35 +1,96 @@
-# Coffee Shop Full Stack
+# Virtual Coffee Shop - Full Stack
 
-## Full Stack Nano - IAM Final Project
-
-Udacity has decided to open a new digitally enabled cafe for students to order drinks, socialize, and study hard. But they need help setting up their menu experience.
-
-You have been called on to demonstrate your newly learned skills to create a full stack drink menu application. The application must:
-
+The virtual coffee shop is a full stack website built with Flask, SQLAlchemy and Ionic. The website allows users to 
 1) Display graphics representing the ratios of ingredients in each drink.
 2) Allow public users to view drink names and graphics.
 3) Allow the shop baristas to see the recipe information.
 4) Allow the shop managers to create new drinks and edit existing drinks.
 
-## Tasks
+## Key software design 
+### Authentication
 
-There are `@TODO` comments throughout the project. We recommend tackling the sections in order. Start by reading the READMEs in:
+The authentication system used for this project is Auth0. `./src/services/auth.service.ts` contains the logic to direct a user to the Auth0 login page, managing the JWT token upon successful callback, and handle setting and retrieving the token from the local store. This token is then consumed by our DrinkService (`./src/services/auth.service.ts`) and passed as an Authorization header when making requests to our backend.
 
-1. [`./backend/`](./backend/README.md)
-2. [`./frontend/`](./frontend/README.md)
+### Authorization
 
-## About the Stack
+The Auth0 JWT includes claims for permissions based on the user's role within the Auth0 system. This project makes use of these claims using the `auth.can(permission)` method which checks if particular permissions exist within the JWT permissions claim of the currently logged in user. This method is defined in  `./src/services/auth.service.ts` and is then used to enable and disable buttons in `./src/pages/drink-menu/drink-form/drink-form.html`.
 
-We started the full stack application for you. It is desiged with some key functional areas:
 
-### Backend
+## Backend
 
-The `./backend` directory contains a partially completed Flask server with a pre-written SQLAlchemy module to simplify your data needs. You will need to complete the required endpoints, configure, and integrate Auth0 for authentication.
+The `./backend` directory contains the Flask application and SQLAlchemy server. 
+### Setup
+#### Python 3.7
 
-[View the README.md within ./backend for more details.](./backend/README.md)
+Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
 
-### Frontend
+#### Virtual Enviornment
 
-The `./frontend` directory contains a complete Ionic frontend to consume the data from the Flask server. You will only need to update the environment variables found within (./frontend/src/environment/environment.ts) to reflect the Auth0 configuration details set up for the backend app. 
+We recommend working within a virtual environment whenever using Python for projects. This keeps your dependencies for each project separate and organaized. Instructions for setting up a virual enviornment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 
-[View the README.md within ./frontend for more details.](./frontend/README.md)
+#### PIP Dependencies
+
+Once you have your virtual environment setup and running, install dependencies by naviging to the `/backend` directory and running:
+
+```bash
+pip install -r requirements.txt
+```
+
+This will install all of the required packages we selected within the `requirements.txt` file.
+
+##### Key Dependencies
+
+- [Flask](http://flask.pocoo.org/)  is a lightweight backend microservices framework. Flask is required to handle requests and responses.
+
+- [SQLAlchemy](https://www.sqlalchemy.org/) and [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/) are libraries to handle the lightweight sqlite database. Since we want you to focus on auth, we handle the heavy lift for you in `./src/database/models.py`. We recommend skimming this code first so you know how to interface with the Drink model.
+
+- [jose](https://python-jose.readthedocs.io/en/latest/) JavaScript Object Signing and Encryption for JWTs. Useful for encoding, decoding, and verifying JWTS.
+
+## Running the server
+
+From within the `./src` directory first ensure you are working using your created virtual environment.
+
+Each time you open a new terminal session, run:
+
+```bash
+export FLASK_APP=api.py;
+```
+
+To run the server, execute:
+
+```bash
+flask run --reload
+```
+
+The `--reload` flag will detect file changes and restart the server automatically.
+
+## Frontend
+
+### Setup
+#### Node and NPM
+This project depends on Nodejs and Node Package Manager (NPM). Before continuing, you must download and install Node (the download includes NPM) from [https://nodejs.com/en/download](https://nodejs.org/en/download/).
+
+#### Ionic Cli
+The Ionic Command Line Interface is required to serve and build the frontend. Instructions for installing the CLI  is in the [Ionic Framework Docs](https://ionicframework.com/docs/installation/cli).
+
+#### PIP Dependencies 
+This project uses NPM to manage software dependencies. NPM Relies on the package.json file located in the `frontend` directory of this repository. After cloning, open your terminal and run:
+
+```bash
+npm install
+```
+#### Configure Enviornment Variables
+
+Ionic uses a configuration file to manage environment variables. These variables ship with the transpiled software and should not include secrets.
+
+- Open `./src/environments/environments.ts` and ensure each variable reflects the system you stood up for the backend.
+
+### Running the server
+Ionic ships with a useful development server which detects changes and transpiles as you work. The application is then accessible through the browser on a localhost port. To run the development server, cd into the `frontend` directory and run:
+
+```bash
+ionic serve
+```
+
+
+
