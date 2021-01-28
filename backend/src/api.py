@@ -13,13 +13,13 @@ setup_db(app)
 CORS(app)
 
 '''
-@TODO uncomment the following lines to initialize the datbase
-!! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
-!! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
+    uncomment the following 2 lines to initialize the datbase
+    !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
+    !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
 
-# db_drop_and_create_all()
-# db_init()
+db_drop_and_create_all()
+db_init()
 
 ## ROUTES
 
@@ -118,28 +118,32 @@ def patch_drink(payload, id):
         requires patch:drinks permission
         updates a drink in the database 
     ''' 
+    body = request.get_json()
+    drink = Drink.query.get(id)
+
+    if drink is None:
+        abort(404)
+
     try:
-        drink = Drink.query.filter(Drink.id == id).one_or_none()
-        if drink is None:
-            abort(404)
-        body = request.get_json()
         title = body.get('title')
-        recipe = body.get('recipe')
-        if recipe is None or title is None:
-            abort(422)
-        if not validate_recipe(recipe):
-            abort(422)
-        drink.title = title
-        drink.recipe = json.dumps(recipe)
+        recipes = body.get('recipe')
+        if title is not None:
+            drink.title = title
+
+        if recipes is not None :
+            drink_recipes = validate_recipes(recipes)
+            if(drink_recipes is not None):
+                drink.recipes = json.dumps(drink_recipes)
+
 
         drink.update()
         return jsonify({
-            'success': True,    
-            'drinks': [drink.long()]
-        })
-
+          'success':True,
+          'drinks': [drink.long()]
+              })
     except:
-        abort(422)
+        abort(400)
+    
 
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
